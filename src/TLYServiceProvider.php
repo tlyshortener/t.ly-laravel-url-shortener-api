@@ -18,7 +18,10 @@ class TLYServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/tly.php', 'tly');
 
         $this->app->singleton('tlyapi', function ($app) {
-            return new TLYApiService(config('tly.api_token'));
+            return new TLYApiService(
+                config('tly.api_token'),
+                config('tly.api_base_url')
+            );
         });
     }
 }

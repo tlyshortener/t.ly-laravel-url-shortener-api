@@ -1,90 +1,115 @@
 # T.LY Laravel URL Shortener API
 
-This package provides a convenient Laravel wrapper for the [T.LY URL Shortener](https://t.ly/) API.
-
-T.LY URL Shortener API documentation to create URLs to track, brand, and share short links. This package aims to help you to work with our API. Please see our [API Docs](https://t.ly/docs) if you have any issues.
+Laravel wrapper for the [T.LY API](https://t.ly/docs), including full support for the endpoints in the current Postman collection.
 
 ## Create an API Key
 
-1. Register a [T.LY Account](https://t.ly/register)
-2. Create an [API Token](https://t.ly/settings#/api)
+1. Register a [T.LY account](https://t.ly/register).
+2. Create an [API token](https://t.ly/settings#/api).
 
 ## Installation
-
-Install via Composer:
 
 ```bash
 composer require tly/laravel-url-shortener-api
 ```
 
-Publish the configuration:
+Publish config:
 
 ```bash
 php artisan vendor:publish --provider="TLY\\LaravelUrlShortener\\TLYServiceProvider" --tag=config
 ```
 
-Set your API token in `.env`:
+Set environment values:
 
-```plaintext
+```dotenv
 TLY_API_TOKEN=your_api_token_here
+TLY_API_BASE_URL=https://api.t.ly/api/v1
 ```
 
 ## Usage
 
-### Create a Short Link
-
 ```php
 use TLY\LaravelUrlShortener\Facades\TLYApi;
+```
 
+All methods return decoded JSON from the T.LY API.
+
+### Short Link Methods
+
+- `create(array $data)`
+- `get(string $shortUrl)`
+- `update(array $data)`
+- `delete(string $shortUrl)`
+- `list(array $params = [])`
+- `listShortLinks(array $params = [])`
+- `expand(string $shortUrl, ?string $password = null, array $payload = [])`
+- `bulk(array $payload)`
+- `bulkUpdate(array $payload)`
+- `stats(string $shortUrl, array $params = [])`
+
+Example:
+
+```php
 $response = TLYApi::create([
     'long_url' => 'https://example.com',
-    'description' => 'Example Link',
+    'description' => 'Example link',
 ]);
-
-
 ```
 
-### Update a Short Link
+### OneLink Methods
+
+- `oneLinkStats(string $shortUrl, ?string $startDate = null, ?string $endDate = null, array $params = [])`
+- `deleteOneLinkStats(string $shortUrl)`
+- `listOneLinks(array $params = [])`
+
+Example:
 
 ```php
-use TLY\LaravelUrlShortener\Facades\TLYApi;
+$stats = TLYApi::oneLinkStats(
+    'https://t.ly/one',
+    '2024-06-01',
+    '2024-06-08'
+);
+```
 
-$response = TLYApi::update([
-    'short_url' => 'https://t.ly/123',
-    'long_url' => 'https://new-destination.com',
-    'description' => 'Updated Link Description',
-    'expire_at_datetime' => '2035-12-31 23:59:59',
+### UTM Preset Methods
+
+- `createUtmPreset(array $payload)`
+- `listUtmPresets(array $params = [])`
+- `getUtmPreset($id)`
+- `updateUtmPreset($id, array $payload)`
+- `deleteUtmPreset($id)`
+
+### Pixel Methods
+
+- `createPixel(array $payload)`
+- `listPixels(array $params = [])`
+- `getPixel($id)`
+- `updatePixel($id, array $payload)`
+- `deletePixel($id)`
+
+### QR Code Methods
+
+- `getQrCode(string $shortUrl, array $params = [])`
+- `updateQrCode(array $payload)`
+
+Example:
+
+```php
+$qr = TLYApi::getQrCode('https://t.ly/c55j', [
+    'output' => 'base64',
+    'format' => 'eps',
 ]);
-
 ```
 
-### Delete a Short Link
+### Tag Methods
 
-```php
-use TLY\LaravelUrlShortener\Facades\TLYApi;
-
-$response = TLYApi::delete('https://t.ly/123');
-
-```
-
-### Get a Short Link
-
-```php
-use TLY\LaravelUrlShortener\Facades\TLYApi;
-
-$response = TLYApi::get('https://t.ly/123');
-
-```
-
-### Get the stats for a Short Link
-
-```php
-use TLY\LaravelUrlShortener\Facades\TLYApi;
-
-$response = TLYApi::stats('https://t.ly/123');
-
-```
+- `listTags(array $params = [])`
+- `createTag(array $payload)`
+- `getTag($id)`
+- `updateTag($id, array $payload)`
+- `deleteTag($id)`
 
 ## License
 
-This package is licensed under the MIT License.
+MIT
