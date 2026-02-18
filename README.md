@@ -1,6 +1,6 @@
 # T.LY Laravel URL Shortener API
 
-Laravel wrapper for the [T.LY API](https://t.ly/docs), including full support for the endpoints in the current Postman collection.
+Laravel wrapper for the [T.LY API](https://t.ly/docs), including full support for the endpoints in the T.LY Postman collection.
 
 ## Create an API Key
 
@@ -34,64 +34,116 @@ use TLY\LaravelUrlShortener\Facades\TLYApi;
 
 All methods return decoded JSON from the T.LY API.
 
-### Short Link Methods
-
-- `create(array $data)`
-- `get(string $shortUrl)`
-- `update(array $data)`
-- `delete(string $shortUrl)`
-- `list(array $params = [])`
-- `listShortLinks(array $params = [])`
-- `expand(string $shortUrl, ?string $password = null, array $payload = [])`
-- `bulk(array $payload)`
-- `bulkUpdate(array $payload)`
-- `stats(string $shortUrl, array $params = [])`
-
-Example:
+### Quick Start
 
 ```php
-$response = TLYApi::create([
+$created = TLYApi::create([
     'long_url' => 'https://example.com',
-    'description' => 'Example link',
+    'description' => 'Example Link',
+]);
+
+$stats = TLYApi::stats('https://t.ly/abc1', [
+    'start_date' => '2025-08-01T00:00:00Z',
+    'end_date' => '2025-08-31T23:59:59Z',
 ]);
 ```
 
-### OneLink Methods
+## Method Reference
 
-- `oneLinkStats(string $shortUrl, ?string $startDate = null, ?string $endDate = null, array $params = [])`
-- `deleteOneLinkStats(string $shortUrl)`
-- `listOneLinks(array $params = [])`
+### Short Links
+
+| API Endpoint | Method | Service Method |
+|---|---|---|
+| `/api/v1/link/shorten` | `POST` | `create(array $data)` |
+| `/api/v1/link` | `GET` | `get(string $shortUrl)` |
+| `/api/v1/link` | `PUT` | `update(array $data)` |
+| `/api/v1/link` | `DELETE` | `delete(string $shortUrl)` |
+| `/api/v1/link/list` | `GET` | `list(array $params = [])` |
+| `/api/v1/link/list` | `GET` | `listShortLinks(array $params = [])` |
+| `/api/v1/link/expand` | `POST` | `expand(string $shortUrl, ?string $password = null, array $payload = [])` |
+| `/api/v1/link/bulk` | `POST` | `bulk(array $payload)` |
+| `/api/v1/link/bulk/update` | `POST` | `bulkUpdate(array $payload)` |
+| `/api/v1/link/stats` | `GET` | `stats(string $shortUrl, array $params = [])` |
 
 Example:
 
 ```php
-$stats = TLYApi::oneLinkStats(
+$expanded = TLYApi::expand('https://t.ly/OYXL', 'password123');
+
+$links = TLYApi::listShortLinks([
+    'search' => 'amazon',
+    'tag_ids' => [1, 2, 3],
+    'pixel_ids' => [1, 2, 3],
+]);
+```
+
+### OneLinks
+
+| API Endpoint | Method | Service Method |
+|---|---|---|
+| `/api/v1/onelink/stats` | `GET` | `oneLinkStats(string $shortUrl, ?string $startDate = null, ?string $endDate = null, array $params = [])` |
+| `/api/v1/onelink/stat` | `DELETE` | `deleteOneLinkStats(string $shortUrl)` |
+| `/api/v1/onelink/list` | `GET` | `listOneLinks(array $params = [])` |
+
+Example:
+
+```php
+$oneLinkStats = TLYApi::oneLinkStats(
     'https://t.ly/one',
     '2024-06-01',
     '2024-06-08'
 );
+
+$oneLinks = TLYApi::listOneLinks(['page' => 1]);
 ```
 
 ### UTM Preset Methods
 
-- `createUtmPreset(array $payload)`
-- `listUtmPresets(array $params = [])`
-- `getUtmPreset($id)`
-- `updateUtmPreset($id, array $payload)`
-- `deleteUtmPreset($id)`
+| API Endpoint | Method | Service Method |
+|---|---|---|
+| `/api/v1/link/utm-preset` | `POST` | `createUtmPreset(array $payload)` |
+| `/api/v1/link/utm-preset` | `GET` | `listUtmPresets(array $params = [])` |
+| `/api/v1/link/utm-preset/{id}` | `GET` | `getUtmPreset($id)` |
+| `/api/v1/link/utm-preset/{id}` | `PUT` | `updateUtmPreset($id, array $payload)` |
+| `/api/v1/link/utm-preset/{id}` | `DELETE` | `deleteUtmPreset($id)` |
 
-### Pixel Methods
+Example:
 
-- `createPixel(array $payload)`
-- `listPixels(array $params = [])`
-- `getPixel($id)`
-- `updatePixel($id, array $payload)`
-- `deletePixel($id)`
+```php
+$preset = TLYApi::createUtmPreset([
+    'name' => 'Newsletter Launch',
+    'source' => 'newsletter',
+    'medium' => 'email',
+    'campaign' => 'fall_launch',
+]);
+```
 
-### QR Code Methods
+### Pixels
 
-- `getQrCode(string $shortUrl, array $params = [])`
-- `updateQrCode(array $payload)`
+| API Endpoint | Method | Service Method |
+|---|---|---|
+| `/api/v1/link/pixel` | `POST` | `createPixel(array $payload)` |
+| `/api/v1/link/pixel` | `GET` | `listPixels(array $params = [])` |
+| `/api/v1/link/pixel/{id}` | `GET` | `getPixel($id)` |
+| `/api/v1/link/pixel/{id}` | `PUT` | `updatePixel($id, array $payload)` |
+| `/api/v1/link/pixel/{id}` | `DELETE` | `deletePixel($id)` |
+
+Example:
+
+```php
+$pixel = TLYApi::createPixel([
+    'name' => 'GTMPixel',
+    'pixel_id' => 'GTM-xxxx',
+    'pixel_type' => 'googleTagManager',
+]);
+```
+
+### QR Codes
+
+| API Endpoint | Method | Service Method |
+|---|---|---|
+| `/api/v1/link/qr-code` | `GET` | `getQrCode(string $shortUrl, array $params = [])` |
+| `/api/v1/link/qr-code` | `PUT` | `updateQrCode(array $payload)` |
 
 Example:
 
@@ -102,13 +154,21 @@ $qr = TLYApi::getQrCode('https://t.ly/c55j', [
 ]);
 ```
 
-### Tag Methods
+### Tags
 
-- `listTags(array $params = [])`
-- `createTag(array $payload)`
-- `getTag($id)`
-- `updateTag($id, array $payload)`
-- `deleteTag($id)`
+| API Endpoint | Method | Service Method |
+|---|---|---|
+| `/api/v1/link/tag` | `GET` | `listTags(array $params = [])` |
+| `/api/v1/link/tag` | `POST` | `createTag(array $payload)` |
+| `/api/v1/link/tag/{id}` | `GET` | `getTag($id)` |
+| `/api/v1/link/tag/{id}` | `PUT` | `updateTag($id, array $payload)` |
+| `/api/v1/link/tag/{id}` | `DELETE` | `deleteTag($id)` |
+
+Example:
+
+```php
+$tag = TLYApi::createTag(['tag' => 'fall2026']);
+```
 
 ## License
 
