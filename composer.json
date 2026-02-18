@@ -11,6 +11,11 @@
 		"t.ly"
 	],
 	"license": "MIT",
+	"homepage": "https://github.com/tlyshortener/t.ly-laravel-url-shortener-api",
+	"support": {
+		"issues": "https://github.com/tlyshortener/t.ly-laravel-url-shortener-api/issues",
+		"source": "https://github.com/tlyshortener/t.ly-laravel-url-shortener-api"
+	},
 	"authors": [
 		{
 			"name": "Tim Leland",
